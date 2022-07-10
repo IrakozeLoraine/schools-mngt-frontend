@@ -1,8 +1,8 @@
-package com.example.schools_mngt.models;
+package com.example.schools_mngt.DAO;
 
 import org.springframework.http.HttpStatus;
 
-public class ResponseDAO {
+public class ResponseDTO {
     private HttpStatus status;
     private String message;
     private String timestamp;
