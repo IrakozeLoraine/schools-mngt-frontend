@@ -81,14 +81,28 @@ public class SchoolResource {
     }
 
     @PostMapping("save-school")
-    public String saveSchool(String name, String school_motto, String established_on, Model model){
-        RestTemplate restTemplate = new RestTemplate();
-        SchoolEntry schoolEntry = new SchoolEntry(name, school_motto, established_on);
-        ResponseEntity<ResponseDTO> responseEntity = restTemplate.postForEntity(url, schoolEntry, ResponseDTO.class);
+    public String saveSchool(HttpServletRequest request, Model model){
+        Object token = request.getSession().getAttribute("token");
 
-        model.addAttribute("school", responseEntity.getBody().getData());
+        if (token!=null) {
+            HttpHeaders headers = getHeaders();
+            headers.set("Authorization",token.toString());
+            HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-        return "redirect:/";
+            String name = request.getParameter("name");
+            String school_motto = request.getParameter("school_motto");
+            String established_on = request.getParameter("established_on");
+
+            RestTemplate restTemplate = new RestTemplate();
+            SchoolEntry schoolEntry = new SchoolEntry(name, school_motto, established_on);
+            ResponseEntity<ResponseDTO> responseEntity = restTemplate.postForEntity(url+"schools", schoolEntry, ResponseDTO.class);
+
+            model.addAttribute("school", responseEntity.getBody().getData());
+
+            return "redirect:/";
+        } else {
+            return "redirect:/login";
+        }
     }
 
     @GetMapping("new-teacher")
